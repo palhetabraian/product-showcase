@@ -1,83 +1,86 @@
-import { useCallback, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { CardPokemon } from '../components/CardPokemon'
-import { useTimePokemon } from '../contextos/useTimePokemon'
-import { buscarListaPokemons } from '../services/api'
-import type { ItemListaPokemon } from '../types/pokemon'
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { CardPokemon } from '../components/CardPokemon';
+import { useTimePokemon } from '../contexts/useTimePokemon';
+import { buscarListaPokemons } from '../services/api';
+import type { ItemListaPokemon } from '../types/pokemon';
 
 interface PokemonComImagem extends ItemListaPokemon {
-  id: number
-  imagemOficial: string
+  id: number;
+  imagemOficial: string;
 }
 
 const URL_IMAGEM_OFICIAL =
-  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork'
-const LIMITE_POKEMONS_POR_CHAMADA = 30
-const LIMITE_PRIMEIRA_GERACAO = 151
-const CHAVE_CACHE_POKEMONS = 'pokedex:pokemons'
+  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork';
+const LIMITE_POKEMONS_POR_CHAMADA = 30;
+const LIMITE_PRIMEIRA_GERACAO = 151;
+const CHAVE_CACHE_POKEMONS = 'pokedex:pokemons';
 
 function ehPokemonComImagem(valor: unknown): valor is PokemonComImagem {
   if (typeof valor !== 'object' || valor === null) {
-    return false
+    return false;
   }
 
-  const pokemon = valor as Record<string, unknown>
+  const pokemon = valor as Record<string, unknown>;
 
   return (
     typeof pokemon.name === 'string' &&
     typeof pokemon.url === 'string' &&
     typeof pokemon.id === 'number' &&
     typeof pokemon.imagemOficial === 'string'
-  )
+  );
 }
 
 function obterPokemonsDoCache(): PokemonComImagem[] | null {
-  const cachePokemons = localStorage.getItem(CHAVE_CACHE_POKEMONS)
+  const cachePokemons = localStorage.getItem(CHAVE_CACHE_POKEMONS);
 
   if (!cachePokemons) {
-    return null
+    return null;
   }
 
   try {
-    const pokemonsSalvos: unknown = JSON.parse(cachePokemons)
+    const pokemonsSalvos: unknown = JSON.parse(cachePokemons);
 
-    if (Array.isArray(pokemonsSalvos) && pokemonsSalvos.every(ehPokemonComImagem)) {
-      return pokemonsSalvos
+    if (
+      Array.isArray(pokemonsSalvos) &&
+      pokemonsSalvos.every(ehPokemonComImagem)
+    ) {
+      return pokemonsSalvos;
     }
   } catch {
-    localStorage.removeItem(CHAVE_CACHE_POKEMONS)
+    localStorage.removeItem(CHAVE_CACHE_POKEMONS);
   }
 
-  return null
+  return null;
 }
 
 function salvarPokemonsNoCache(pokemons: PokemonComImagem[]): void {
-  localStorage.setItem(CHAVE_CACHE_POKEMONS, JSON.stringify(pokemons))
+  localStorage.setItem(CHAVE_CACHE_POKEMONS, JSON.stringify(pokemons));
 }
 
 function extrairIdDaUrl(urlPokemon: string): number {
-  const partesUrl = urlPokemon.split('/').filter(Boolean)
-  const idPokemon = Number(partesUrl.at(-1))
+  const partesUrl = urlPokemon.split('/').filter(Boolean);
+  const idPokemon = Number(partesUrl.at(-1));
 
-  return idPokemon
+  return idPokemon;
 }
 
 function montarImagemOficial(idPokemon: number): string {
-  return `${URL_IMAGEM_OFICIAL}/${idPokemon}.png`
+  return `${URL_IMAGEM_OFICIAL}/${idPokemon}.png`;
 }
 
 function prepararPokemon(pokemon: ItemListaPokemon): PokemonComImagem {
-  const idPokemon = extrairIdDaUrl(pokemon.url)
+  const idPokemon = extrairIdDaUrl(pokemon.url);
 
   return {
     ...pokemon,
     id: idPokemon,
     imagemOficial: montarImagemOficial(idPokemon),
-  }
+  };
 }
 
 export function PaginaInicial() {
-  const navegar = useNavigate()
+  const navegar = useNavigate();
   const {
     favoritos,
     adicionarFavorito,
@@ -85,79 +88,79 @@ export function PaginaInicial() {
     limparTimePokemon,
     estaNoTime,
     timeCheio,
-  } = useTimePokemon()
-  const [pokemons, setPokemons] = useState<PokemonComImagem[]>([])
-  const [termoBusca, setTermoBusca] = useState('')
-  const [carregando, setCarregando] = useState(true)
-  const [carregandoMais, setCarregandoMais] = useState(false)
-  const [mensagemErro, setMensagemErro] = useState<string | null>(null)
+  } = useTimePokemon();
+  const [pokemons, setPokemons] = useState<PokemonComImagem[]>([]);
+  const [termoBusca, setTermoBusca] = useState('');
+  const [carregando, setCarregando] = useState(true);
+  const [carregandoMais, setCarregandoMais] = useState(false);
+  const [mensagemErro, setMensagemErro] = useState<string | null>(null);
 
-  const termoBuscaNormalizado = termoBusca.trim().toLowerCase()
+  const termoBuscaNormalizado = termoBusca.trim().toLowerCase();
   const pokemonsFiltrados = pokemons.filter((pokemon) =>
-    pokemon.name.toLowerCase().includes(termoBuscaNormalizado),
-  )
-  const podeCarregarMais = pokemons.length < LIMITE_PRIMEIRA_GERACAO
+    pokemon.name.toLowerCase().includes(termoBuscaNormalizado)
+  );
+  const podeCarregarMais = pokemons.length < LIMITE_PRIMEIRA_GERACAO;
 
   const carregarPokemons = useCallback(async (deslocamento = 0) => {
-    const quantidadeRestante = LIMITE_PRIMEIRA_GERACAO - deslocamento
-    const limite = Math.min(LIMITE_POKEMONS_POR_CHAMADA, quantidadeRestante)
+    const quantidadeRestante = LIMITE_PRIMEIRA_GERACAO - deslocamento;
+    const limite = Math.min(LIMITE_POKEMONS_POR_CHAMADA, quantidadeRestante);
 
     if (limite <= 0) {
-      return
+      return;
     }
 
     try {
       if (deslocamento === 0) {
-        setCarregando(true)
+        setCarregando(true);
       } else {
-        setCarregandoMais(true)
+        setCarregandoMais(true);
       }
 
-      setMensagemErro(null)
+      setMensagemErro(null);
 
-      const listaPokemons = await buscarListaPokemons(limite, deslocamento)
-      const pokemonsComImagem = listaPokemons.map(prepararPokemon)
+      const listaPokemons = await buscarListaPokemons(limite, deslocamento);
+      const pokemonsComImagem = listaPokemons.map(prepararPokemon);
 
       if (deslocamento === 0) {
-        setPokemons(pokemonsComImagem)
-        salvarPokemonsNoCache(pokemonsComImagem)
+        setPokemons(pokemonsComImagem);
+        salvarPokemonsNoCache(pokemonsComImagem);
       } else {
         setPokemons((pokemonsAtuais) => {
-          const novaListaPokemons = [...pokemonsAtuais, ...pokemonsComImagem]
-          salvarPokemonsNoCache(novaListaPokemons)
+          const novaListaPokemons = [...pokemonsAtuais, ...pokemonsComImagem];
+          salvarPokemonsNoCache(novaListaPokemons);
 
-          return novaListaPokemons
-        })
+          return novaListaPokemons;
+        });
       }
     } catch {
-      setMensagemErro('Nao foi possivel carregar os pokemons.')
+      setMensagemErro('Nao foi possivel carregar os pokemons.');
     } finally {
       if (deslocamento === 0) {
-        setCarregando(false)
+        setCarregando(false);
       } else {
-        setCarregandoMais(false)
+        setCarregandoMais(false);
       }
     }
-  }, [])
+  }, []);
 
   function favoritarPokemon(pokemon: PokemonComImagem) {
     adicionarFavorito({
       nome: pokemon.name,
       imagem: pokemon.imagemOficial,
-    })
+    });
   }
 
   useEffect(() => {
-    const pokemonsSalvos = obterPokemonsDoCache()
+    const pokemonsSalvos = obterPokemonsDoCache();
 
     if (pokemonsSalvos) {
-      setPokemons(pokemonsSalvos)
-      setCarregando(false)
-      return
+      setPokemons(pokemonsSalvos);
+      setCarregando(false);
+      return;
     }
 
-    carregarPokemons()
-  }, [carregarPokemons])
+    carregarPokemons();
+  }, [carregarPokemons]);
 
   if (carregando) {
     return (
@@ -166,7 +169,7 @@ export function PaginaInicial() {
           Carregando pokemons...
         </p>
       </main>
-    )
+    );
   }
 
   if (mensagemErro) {
@@ -176,7 +179,7 @@ export function PaginaInicial() {
           {mensagemErro}
         </div>
       </main>
-    )
+    );
   }
 
   return (
@@ -210,7 +213,9 @@ export function PaginaInicial() {
         <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-xl font-bold text-slate-950">Meu time Pokemon</h2>
+              <h2 className="text-xl font-bold text-slate-950">
+                Meu time Pokemon
+              </h2>
               <p className="mt-1 text-sm text-slate-500">
                 {favoritos.length}/6 favoritos
               </p>
@@ -252,7 +257,9 @@ export function PaginaInicial() {
         <section>
           <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-slate-950">Lista de pokemons</h2>
+              <h2 className="text-2xl font-bold text-slate-950">
+                Lista de pokemons
+              </h2>
               <p className="mt-1 text-sm text-slate-500">
                 {pokemonsFiltrados.length} resultado(s) exibido(s)
               </p>
@@ -319,5 +326,5 @@ export function PaginaInicial() {
         )}
       </section>
     </main>
-  )
+  );
 }

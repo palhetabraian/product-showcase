@@ -1,7 +1,7 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { TimePokemonProvider } from './contextos/TimePokemonContext'
-import { PaginaDetalhesPokemon } from './pages/PaginaDetalhesPokemon'
-import { PaginaInicial } from './pages/PaginaInicial'
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { TimePokemonProvider } from './contexts/TimePokemonContext';
+import { PaginaDetalhesPokemon } from './pages/PaginaDetalhesPokemon';
+import { PaginaInicial } from './pages/PaginaInicial';
 
 function App() {
   return (
@@ -13,7 +13,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </TimePokemonProvider>
-  )
+  );
 }
 
-export default App
+export default App;
