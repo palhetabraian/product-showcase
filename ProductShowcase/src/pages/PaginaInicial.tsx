@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CardPokemon } from '../componentes/CardPokemon'
-import { useTimePokemon } from '../contextos/TimePokemonContext'
+import { CardPokemon } from '../components/CardPokemon'
+import { useTimePokemon } from '../contextos/useTimePokemon'
 import { buscarListaPokemons } from '../services/api'
 import type { ItemListaPokemon } from '../types/pokemon'
 
