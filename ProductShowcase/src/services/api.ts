@@ -5,16 +5,20 @@ import type {
   RespostaListaPokemons,
 } from '../types/pokemon'
 
-const LIMITE_PRIMEIRA_GERACAO = 151
+const LIMITE_PADRAO_POKEMONS = 30
 
 export const api = axios.create({
   baseURL: 'https://pokeapi.co/api/v2',
 })
 
-export async function buscarListaPokemons(): Promise<ItemListaPokemon[]> {
+export async function buscarListaPokemons(
+  limite = LIMITE_PADRAO_POKEMONS,
+  deslocamento = 0,
+): Promise<ItemListaPokemon[]> {
   const resposta = await api.get<RespostaListaPokemons>('/pokemon', {
     params: {
-      limit: LIMITE_PRIMEIRA_GERACAO,
+      limit: limite,
+      offset: deslocamento,
     },
   })
 
