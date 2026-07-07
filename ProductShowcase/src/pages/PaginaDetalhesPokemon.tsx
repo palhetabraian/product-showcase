@@ -20,14 +20,14 @@ function converterPesoParaQuilos(peso: number): string {
 }
 
 export function PaginaDetalhesPokemon() {
-  const { id } = useParams<{ id: string }>()
+  const { nome } = useParams<{ nome: string }>()
   const [pokemon, setPokemon] = useState<DetalhesPokemon | null>(null)
   const [carregando, setCarregando] = useState(true)
   const [mensagemErro, setMensagemErro] = useState<string | null>(null)
 
   useEffect(() => {
     async function carregarDetalhesPokemon() {
-      if (!id) {
+      if (!nome) {
         setMensagemErro('Pokemon nao encontrado.')
         setCarregando(false)
         return
@@ -37,7 +37,7 @@ export function PaginaDetalhesPokemon() {
         setCarregando(true)
         setMensagemErro(null)
 
-        const detalhesPokemon = await buscarDetalhesPokemonPorNome(id)
+        const detalhesPokemon = await buscarDetalhesPokemonPorNome(nome)
 
         setPokemon(detalhesPokemon)
       } catch {
@@ -48,7 +48,7 @@ export function PaginaDetalhesPokemon() {
     }
 
     carregarDetalhesPokemon()
-  }, [id])
+  }, [nome])
 
   if (carregando) {
     return (

@@ -90,7 +90,7 @@ export function PaginaInicial() {
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {pokemons.map((pokemon) => (
             <CardPokemon
-              aoClicar={() => navegar(`/pokemon/${pokemon.id}`)}
+              aoClicar={() => navegar(`/pokemon/${pokemon.name}`)}
               imagem={pokemon.imagemOficial}
               key={pokemon.name}
               nome={pokemon.name}
