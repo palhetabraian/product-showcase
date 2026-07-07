@@ -14,6 +14,46 @@ const URL_IMAGEM_OFICIAL =
   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork'
 const LIMITE_POKEMONS_POR_CHAMADA = 30
 const LIMITE_PRIMEIRA_GERACAO = 151
+const CHAVE_CACHE_POKEMONS = 'pokedex:pokemons'
+
+function ehPokemonComImagem(valor: unknown): valor is PokemonComImagem {
+  if (typeof valor !== 'object' || valor === null) {
+    return false
+  }
+
+  const pokemon = valor as Record<string, unknown>
+
+  return (
+    typeof pokemon.name === 'string' &&
+    typeof pokemon.url === 'string' &&
+    typeof pokemon.id === 'number' &&
+    typeof pokemon.imagemOficial === 'string'
+  )
+}
+
+function obterPokemonsDoCache(): PokemonComImagem[] | null {
+  const cachePokemons = localStorage.getItem(CHAVE_CACHE_POKEMONS)
+
+  if (!cachePokemons) {
+    return null
+  }
+
+  try {
+    const pokemonsSalvos: unknown = JSON.parse(cachePokemons)
+
+    if (Array.isArray(pokemonsSalvos) && pokemonsSalvos.every(ehPokemonComImagem)) {
+      return pokemonsSalvos
+    }
+  } catch {
+    localStorage.removeItem(CHAVE_CACHE_POKEMONS)
+  }
+
+  return null
+}
+
+function salvarPokemonsNoCache(pokemons: PokemonComImagem[]): void {
+  localStorage.setItem(CHAVE_CACHE_POKEMONS, JSON.stringify(pokemons))
+}
 
 function extrairIdDaUrl(urlPokemon: string): number {
   const partesUrl = urlPokemon.split('/').filter(Boolean)
@@ -42,6 +82,7 @@ export function PaginaInicial() {
     favoritos,
     adicionarFavorito,
     removerFavorito,
+    limparTimePokemon,
     estaNoTime,
     timeCheio,
   } = useTimePokemon()
@@ -79,11 +120,14 @@ export function PaginaInicial() {
 
       if (deslocamento === 0) {
         setPokemons(pokemonsComImagem)
+        salvarPokemonsNoCache(pokemonsComImagem)
       } else {
-        setPokemons((pokemonsAtuais) => [
-          ...pokemonsAtuais,
-          ...pokemonsComImagem,
-        ])
+        setPokemons((pokemonsAtuais) => {
+          const novaListaPokemons = [...pokemonsAtuais, ...pokemonsComImagem]
+          salvarPokemonsNoCache(novaListaPokemons)
+
+          return novaListaPokemons
+        })
       }
     } catch {
       setMensagemErro('Nao foi possivel carregar os pokemons.')
@@ -104,6 +148,14 @@ export function PaginaInicial() {
   }
 
   useEffect(() => {
+    const pokemonsSalvos = obterPokemonsDoCache()
+
+    if (pokemonsSalvos) {
+      setPokemons(pokemonsSalvos)
+      setCarregando(false)
+      return
+    }
+
     carregarPokemons()
   }, [carregarPokemons])
 
@@ -132,7 +184,17 @@ export function PaginaInicial() {
           <p className="text-sm font-semibold uppercase tracking-wide text-red-600">
             Primeira geracao
           </p>
-          <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Pokedex</h1>
+          <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <h1 className="text-3xl font-bold sm:text-4xl">Pokedex</h1>
+            <button
+              className="w-full rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-bold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:text-slate-400 sm:w-auto"
+              disabled={favoritos.length === 0}
+              onClick={limparTimePokemon}
+              type="button"
+            >
+              Limpar lista
+            </button>
+          </div>
         </header>
 
         <section className="mb-8 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
@@ -163,7 +225,7 @@ export function PaginaInicial() {
                     {pokemon.nome}
                   </strong>
                   <button
-                    className="mt-2 text-sm font-semibold text-red-600 hover:text-red-700"
+                    className="mt-2 rounded-md border border-red-200 px-3 py-1 text-sm font-semibold text-red-600 transition hover:bg-red-50 hover:text-red-700"
                     onClick={() => removerFavorito(pokemon.nome)}
                     type="button"
                   >
