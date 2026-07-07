@@ -161,16 +161,18 @@ export function PaginaInicial() {
 
   if (carregando) {
     return (
-      <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-900">
-        <p className="text-center text-lg font-semibold">Carregando pokemons...</p>
+      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 text-slate-900">
+        <p className="rounded-xl border border-slate-200 bg-white px-6 py-4 text-center text-lg font-semibold shadow-sm">
+          Carregando pokemons...
+        </p>
       </main>
     )
   }
 
   if (mensagemErro) {
     return (
-      <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-900">
-        <div className="mx-auto max-w-xl rounded-lg border border-red-200 bg-red-50 p-4 text-center text-red-700">
+      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 text-slate-900">
+        <div className="mx-auto max-w-xl rounded-xl border border-red-200 bg-red-50 p-5 text-center font-semibold text-red-700 shadow-sm">
           {mensagemErro}
         </div>
       </main>
@@ -178,47 +180,57 @@ export function PaginaInicial() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
-      <section className="mx-auto max-w-7xl">
-        <header className="mb-8">
-          <p className="text-sm font-semibold uppercase tracking-wide text-red-600">
-            Primeira geracao
-          </p>
-          <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <h1 className="text-3xl font-bold sm:text-4xl">Pokedex</h1>
-            <button
-              className="w-full rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-bold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:text-slate-400 sm:w-auto"
-              disabled={favoritos.length === 0}
-              onClick={limparTimePokemon}
-              type="button"
-            >
-              Limpar lista
-            </button>
+    <main className="min-h-screen bg-slate-50 text-slate-900">
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-6 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-wide text-red-600">
+              Primeira geracao
+            </p>
+            <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              Pokedex
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm text-slate-500">
+              Explore, filtre e monte seu time com ate seis pokemons.
+            </p>
           </div>
-        </header>
 
-        <section className="mb-8 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+          <button
+            className="w-full rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-bold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400 sm:w-auto"
+            disabled={favoritos.length === 0}
+            onClick={limparTimePokemon}
+            type="button"
+          >
+            Limpar lista
+          </button>
+        </div>
+      </header>
+
+      <section className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+        <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-lg font-bold">Meu time Pokemon</h2>
-              <p className="text-sm text-slate-500">{favoritos.length}/6 favoritos</p>
+              <h2 className="text-xl font-bold text-slate-950">Meu time Pokemon</h2>
+              <p className="mt-1 text-sm text-slate-500">
+                {favoritos.length}/6 favoritos
+              </p>
             </div>
           </div>
 
           {favoritos.length === 0 ? (
-            <p className="mt-4 text-sm text-slate-500">
+            <p className="mt-5 rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">
               Nenhum pokemon favoritado ainda.
             </p>
           ) : (
-            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
               {favoritos.map((pokemon) => (
                 <div
-                  className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-center"
+                  className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-center transition hover:border-red-200 hover:bg-white"
                   key={pokemon.nome}
                 >
                   <img
                     alt={`Imagem oficial do ${pokemon.nome}`}
-                    className="mx-auto h-20 w-20 object-contain"
+                    className="mx-auto h-20 w-20 object-contain sm:h-24 sm:w-24"
                     src={pokemon.imagem}
                   />
                   <strong className="mt-2 block text-sm capitalize">
@@ -237,47 +249,66 @@ export function PaginaInicial() {
           )}
         </section>
 
-        <div className="mb-6 max-w-md">
-          <label
-            className="mb-2 block text-sm font-semibold text-slate-700"
-            htmlFor="busca-pokemon"
-          >
-            Buscar pokemon
-          </label>
-          <input
-            className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:ring-2 focus:ring-red-200"
-            id="busca-pokemon"
-            onChange={(evento) => setTermoBusca(evento.target.value)}
-            placeholder="Digite o nome do pokemon"
-            type="search"
-            value={termoBusca}
-          />
-        </div>
+        <section>
+          <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-950">Lista de pokemons</h2>
+              <p className="mt-1 text-sm text-slate-500">
+                {pokemonsFiltrados.length} resultado(s) exibido(s)
+              </p>
+            </div>
 
-        {pokemonsFiltrados.length === 0 ? (
-          <div className="rounded-lg border border-slate-200 bg-white p-6 text-center text-slate-600">
-            Nenhum pokemon encontrado.
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-            {pokemonsFiltrados.map((pokemon) => (
-              <CardPokemon
-                aoFavoritar={() => favoritarPokemon(pokemon)}
-                aoClicar={() => navegar(`/pokemon/${pokemon.name}`)}
-                desabilitarFavorito={timeCheio && !estaNoTime(pokemon.name)}
-                favoritado={estaNoTime(pokemon.name)}
-                imagem={pokemon.imagemOficial}
-                key={pokemon.name}
-                nome={pokemon.name}
+            <div className="w-full lg:max-w-md">
+              <label
+                className="mb-2 block text-sm font-semibold text-slate-700"
+                htmlFor="busca-pokemon"
+              >
+                Buscar pokemon
+              </label>
+              <input
+                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:ring-2 focus:ring-red-200"
+                id="busca-pokemon"
+                onChange={(evento) => setTermoBusca(evento.target.value)}
+                placeholder="Digite o nome do pokemon"
+                type="search"
+                value={termoBusca}
               />
-            ))}
+            </div>
           </div>
-        )}
+
+          {pokemonsFiltrados.length === 0 ? (
+            <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-slate-600 shadow-sm">
+              Nenhum pokemon encontrado.
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+              {pokemonsFiltrados.map((pokemon) => (
+                <CardPokemon
+                  aoFavoritar={() => favoritarPokemon(pokemon)}
+                  aoClicar={() => navegar(`/pokemon/${pokemon.name}`)}
+                  desabilitarFavorito={timeCheio && !estaNoTime(pokemon.name)}
+                  favoritado={estaNoTime(pokemon.name)}
+                  imagem={pokemon.imagemOficial}
+                  key={pokemon.name}
+                  nome={pokemon.name}
+                  numero={pokemon.id}
+                />
+              ))}
+            </div>
+          )}
+        </section>
 
         {podeCarregarMais && (
-          <div className="mt-8 flex justify-center">
+          <div className="flex flex-col items-center gap-4 pt-2">
+            {carregandoMais && (
+              <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-600 shadow-sm">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-red-600" />
+                Carregando mais pokemons...
+              </div>
+            )}
+
             <button
-              className="rounded-lg bg-red-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+              className="w-full rounded-xl bg-red-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-slate-300 sm:w-auto"
               disabled={carregandoMais}
               onClick={() => carregarPokemons(pokemons.length)}
               type="button"

@@ -52,8 +52,10 @@ export function PaginaDetalhesPokemon() {
 
   if (carregando) {
     return (
-      <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-900">
-        <p className="text-center text-lg font-semibold">Carregando detalhes...</p>
+      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 text-slate-900">
+        <p className="rounded-xl border border-slate-200 bg-white px-6 py-4 text-center text-lg font-semibold shadow-sm">
+          Carregando detalhes...
+        </p>
       </main>
     )
   }
@@ -61,12 +63,15 @@ export function PaginaDetalhesPokemon() {
   if (mensagemErro || !pokemon) {
     return (
       <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-900">
-        <section className="mx-auto max-w-3xl">
-          <Link className="text-sm font-semibold text-red-600 hover:text-red-700" to="/">
+        <section className="mx-auto max-w-3xl rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <Link
+            className="inline-flex rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 hover:text-red-700"
+            to="/"
+          >
             Voltar para a Pokedex
           </Link>
 
-          <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+          <div className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 font-semibold text-red-700">
             {mensagemErro ?? 'Pokemon nao encontrado.'}
           </div>
         </section>
@@ -77,14 +82,29 @@ export function PaginaDetalhesPokemon() {
   const imagemOficial = obterImagemOficial(pokemon)
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-10 text-slate-900">
-      <section className="mx-auto max-w-5xl">
-        <Link className="text-sm font-semibold text-red-600 hover:text-red-700" to="/">
-          Voltar para a Pokedex
-        </Link>
+    <main className="min-h-screen bg-slate-50 text-slate-900">
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-6 sm:px-6 lg:px-8">
+          <Link
+            className="w-fit rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 hover:text-red-700"
+            to="/"
+          >
+            Voltar para a Pokedex
+          </Link>
+          <div>
+            <p className="text-sm font-bold uppercase tracking-wide text-red-600">
+              Detalhes do pokemon
+            </p>
+            <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              {formatarNome(pokemon.name)}
+            </h1>
+          </div>
+        </div>
+      </header>
 
-        <div className="mt-6 grid gap-8 rounded-lg border border-slate-200 bg-white p-6 shadow-sm md:grid-cols-[minmax(0,320px)_1fr] md:p-8">
-          <div className="flex aspect-square items-center justify-center rounded-lg bg-slate-100 p-6">
+      <section className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="grid gap-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:grid-cols-[minmax(0,340px)_1fr] md:p-8">
+          <div className="flex aspect-square items-center justify-center rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-slate-100 p-6">
             {imagemOficial ? (
               <img
                 alt={`Imagem oficial do ${formatarNome(pokemon.name)}`}
@@ -98,18 +118,18 @@ export function PaginaDetalhesPokemon() {
             )}
           </div>
 
-          <div>
-            <span className="text-sm font-semibold text-slate-500">
+          <div className="flex flex-col justify-center">
+            <span className="text-sm font-bold text-slate-500">
               #{String(pokemon.id).padStart(3, '0')}
             </span>
-            <h1 className="mt-2 text-3xl font-bold sm:text-4xl">
+            <h2 className="mt-2 text-3xl font-black text-slate-950 sm:text-5xl">
               {formatarNome(pokemon.name)}
-            </h1>
+            </h2>
 
             <div className="mt-5 flex flex-wrap gap-2">
               {pokemon.types.map((tipoPokemon) => (
                 <span
-                  className="rounded-full bg-red-100 px-3 py-1 text-sm font-semibold text-red-700"
+                  className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-sm font-bold text-red-700"
                   key={tipoPokemon.type.name}
                 >
                   {formatarNome(tipoPokemon.type.name)}
@@ -117,17 +137,17 @@ export function PaginaDetalhesPokemon() {
               ))}
             </div>
 
-            <dl className="mt-8 grid grid-cols-2 gap-4 sm:max-w-md">
-              <div className="rounded-lg border border-slate-200 p-4">
+            <dl className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
                 <dt className="text-sm font-semibold text-slate-500">Altura</dt>
-                <dd className="mt-1 text-xl font-bold">
+                <dd className="mt-1 text-2xl font-black text-slate-950">
                   {converterAlturaParaMetros(pokemon.height)}
                 </dd>
               </div>
 
-              <div className="rounded-lg border border-slate-200 p-4">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
                 <dt className="text-sm font-semibold text-slate-500">Peso</dt>
-                <dd className="mt-1 text-xl font-bold">
+                <dd className="mt-1 text-2xl font-black text-slate-950">
                   {converterPesoParaQuilos(pokemon.weight)}
                 </dd>
               </div>
