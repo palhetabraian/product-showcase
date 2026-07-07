@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { CardPokemon } from '../componentes/CardPokemon'
 import { buscarListaPokemons } from '../services/api'
 import type { ItemListaPokemon } from '../types/pokemon'
 
@@ -22,10 +23,6 @@ function montarImagemOficial(idPokemon: number): string {
   return `${URL_IMAGEM_OFICIAL}/${idPokemon}.png`
 }
 
-function formatarNome(nomePokemon: string): string {
-  return nomePokemon.charAt(0).toUpperCase() + nomePokemon.slice(1)
-}
-
 function prepararPokemon(pokemon: ItemListaPokemon): PokemonComImagem {
   const idPokemon = extrairIdDaUrl(pokemon.url)
 
@@ -37,6 +34,7 @@ function prepararPokemon(pokemon: ItemListaPokemon): PokemonComImagem {
 }
 
 export function PaginaInicial() {
+  const navegar = useNavigate()
   const [pokemons, setPokemons] = useState<PokemonComImagem[]>([])
   const [carregando, setCarregando] = useState(true)
   const [mensagemErro, setMensagemErro] = useState<string | null>(null)
@@ -91,27 +89,12 @@ export function PaginaInicial() {
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {pokemons.map((pokemon) => (
-            <Link
-              className="group rounded-lg border border-slate-200 bg-white p-4 text-center shadow-sm transition hover:-translate-y-1 hover:border-red-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500"
+            <CardPokemon
+              aoClicar={() => navegar(`/pokemon/${pokemon.id}`)}
+              imagem={pokemon.imagemOficial}
               key={pokemon.name}
-              to={`/pokemon/${pokemon.name}`}
-            >
-              <div className="aspect-square rounded-md bg-slate-100 p-3">
-                <img
-                  alt={`Imagem oficial do ${formatarNome(pokemon.name)}`}
-                  className="h-full w-full object-contain transition group-hover:scale-105"
-                  loading="lazy"
-                  src={pokemon.imagemOficial}
-                />
-              </div>
-
-              <span className="mt-3 block text-xs font-semibold text-slate-500">
-                #{String(pokemon.id).padStart(3, '0')}
-              </span>
-              <h2 className="mt-1 text-base font-bold text-slate-900">
-                {formatarNome(pokemon.name)}
-              </h2>
-            </Link>
+              nome={pokemon.name}
+            />
           ))}
         </div>
       </section>
