@@ -25,17 +25,17 @@ export function CardPokemon({
   const numeroFormatado = numero ? `#${String(numero).padStart(3, '0')}` : null
 
   return (
-    <article className="group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-red-300 hover:shadow-lg">
+    <article className="group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl focus-within:border-red-200 focus-within:shadow-md">
       <button
         aria-label={`Ver detalhes do ${nomeFormatado}`}
-        className="w-full p-4 text-center focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-500"
+        className="w-full p-4 text-center outline-none transition-transform duration-200 ease-out active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-red-200"
         onClick={aoClicar}
         type="button"
       >
-        <div className="aspect-square rounded-lg bg-gradient-to-b from-slate-50 to-slate-100 p-4">
+        <div className="aspect-square rounded-lg bg-gradient-to-b from-slate-50 to-slate-100 p-4 transition-colors duration-300 ease-out group-hover:from-red-50 group-hover:to-slate-100">
           <img
             alt={`Imagem oficial do ${nomeFormatado}`}
-            className="h-full w-full object-contain transition group-hover:scale-105"
+            className="h-full w-full object-contain transition-transform duration-300 ease-out group-hover:scale-105"
             loading="lazy"
             src={imagem}
           />
@@ -54,7 +54,7 @@ export function CardPokemon({
 
       {aoFavoritar && (
         <button
-          className="mx-4 mb-4 w-[calc(100%-2rem)] rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 transition hover:border-red-300 hover:bg-red-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-400"
+          className="mx-4 mb-4 w-[calc(100%-2rem)] rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 outline-none transition-all duration-200 ease-out hover:border-red-300 hover:bg-red-100 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-red-200 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-400 disabled:active:scale-100"
           disabled={favoritado || desabilitarFavorito}
           onClick={aoFavoritar}
           type="button"
