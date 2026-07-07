@@ -36,8 +36,14 @@ function prepararPokemon(pokemon: ItemListaPokemon): PokemonComImagem {
 export function PaginaInicial() {
   const navegar = useNavigate()
   const [pokemons, setPokemons] = useState<PokemonComImagem[]>([])
+  const [termoBusca, setTermoBusca] = useState('')
   const [carregando, setCarregando] = useState(true)
   const [mensagemErro, setMensagemErro] = useState<string | null>(null)
+
+  const termoBuscaNormalizado = termoBusca.trim().toLowerCase()
+  const pokemonsFiltrados = pokemons.filter((pokemon) =>
+    pokemon.name.toLowerCase().includes(termoBuscaNormalizado),
+  )
 
   useEffect(() => {
     async function carregarPokemons() {
@@ -87,16 +93,39 @@ export function PaginaInicial() {
           <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Pokedex</h1>
         </header>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {pokemons.map((pokemon) => (
-            <CardPokemon
-              aoClicar={() => navegar(`/pokemon/${pokemon.name}`)}
-              imagem={pokemon.imagemOficial}
-              key={pokemon.name}
-              nome={pokemon.name}
-            />
-          ))}
+        <div className="mb-6 max-w-md">
+          <label
+            className="mb-2 block text-sm font-semibold text-slate-700"
+            htmlFor="busca-pokemon"
+          >
+            Buscar pokemon
+          </label>
+          <input
+            className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:ring-2 focus:ring-red-200"
+            id="busca-pokemon"
+            onChange={(evento) => setTermoBusca(evento.target.value)}
+            placeholder="Digite o nome do pokemon"
+            type="search"
+            value={termoBusca}
+          />
         </div>
+
+        {pokemonsFiltrados.length === 0 ? (
+          <div className="rounded-lg border border-slate-200 bg-white p-6 text-center text-slate-600">
+            Nenhum pokemon encontrado.
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            {pokemonsFiltrados.map((pokemon) => (
+              <CardPokemon
+                aoClicar={() => navegar(`/pokemon/${pokemon.name}`)}
+                imagem={pokemon.imagemOficial}
+                key={pokemon.name}
+                nome={pokemon.name}
+              />
+            ))}
+          </div>
+        )}
       </section>
     </main>
   )
