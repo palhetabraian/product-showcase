@@ -1,5 +1,41 @@
 # React + TypeScript + Vite
 
+## Estrutura sugerida para a Pokedex
+
+```txt
+src/
+  assets/
+  components/
+    CardPokemon.tsx
+    CampoBusca.tsx
+    EstadoCarregando.tsx
+    ListaPokemons.tsx
+  constants/
+    pokemon.ts
+  hooks/
+    useDetalhesPokemon.ts
+    usePokemons.ts
+  pages/
+    PaginaDetalhesPokemon.tsx
+    PaginaInicial.tsx
+  services/
+    api.ts
+    pokemonService.ts
+  types/
+    pokemon.ts
+  utils/
+    formatarPokemon.ts
+```
+
+- `assets`: imagens, icones e arquivos estaticos usados pela interface.
+- `components`: componentes reutilizaveis da tela, como cards, listas, busca e estados visuais.
+- `constants`: valores fixos da aplicacao, como limites de paginacao, rotas ou textos padrao.
+- `hooks`: hooks customizados para concentrar regras de estado e carregamento dos dados da PokeAPI.
+- `pages`: telas principais da aplicacao, separando a pagina inicial da pagina de detalhes.
+- `services`: configuracao do Axios e funcoes responsaveis por buscar dados na PokeAPI.
+- `types`: tipos TypeScript compartilhados, principalmente os formatos de Pokemon usados no app.
+- `utils`: funcoes puras de apoio, como formatacao de nomes, numeros, tipos ou sprites.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
